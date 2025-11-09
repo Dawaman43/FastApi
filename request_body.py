@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Path, Query
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -54,6 +54,17 @@ async def read_itemss(
 @router.get("/item")
 async def read_item(q: Annotated[str | None, Query(alias="item-query")] = None):
     results = {"items": [{"item_id": "foo"}, {"item_id": "bas"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+
+@router.get("/product/{product_id}")
+async def read_product(
+    product_id: Annotated[int, Path(title="The id of the product", gt=2)],
+    q: Annotated[str | None, Query(alias="product-query")] = None,
+):
+    results = {"product_id": product_id}
     if q:
         results.update({"q": q})
     return results
